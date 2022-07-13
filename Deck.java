@@ -1,81 +1,103 @@
-package UnoGame;
+package uno;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+import javax.swing.ImageIcon;
 
 public class Deck {
-
-private Card[] cards; 
-
-private int cardsInDeck;
-
-public Deck() {
-
-cards = new Card[108];
-
-}
-
-public void reset()
-
-{
-
-Card.Color[] colors = Card.Color.values();
-
-cardsInDeck = 0;
-
-for(int i = 0; i < colors.length-1; i++)
-
-{
-
-Card.Color color = colors[i];
-
-cards[cardsInDeck++] = new Card(color, Card.Value.getValue(0));
-
-for(int j = 1; j < 10; j++)
-
-{
-
-cards[cardsInDeck++] = new Card(color, Card.Value.getValue(j));
-
-cards[cardsInDeck++] = new Card(color, Card.Value.getValue(j));
-
-}
-
-Card.Value[] values = new Card.Value[]{Card.Value.DrawTwo,Card.Value.Skip,Card.Value.Reverse};
-
-for(Card.Value value : values)
-
-{
-
-cards[cardsInDeck++] = new Card(color, value);
-
-cards[cardsInDeck++] = new Card(color, value);
-
-}
-
-}
-
-Card.Value[] values = new Card.Value[]{Card.Value.Wild, Card.Value.Wild_Four};
-
-for(Card.Value value : values)
-
-{
-
-for(int i = 0; i < 4; i++)
-
-{
-
-cards[cardsInDeck++] = new Card(Card.Color.Wild, value);
-
-}
-
-}
-
-}
-
-public Card drawCard() { 
-
-
-
-return null;
-
-}
-
+	private UnoCard[] cards;
+	private int cardsInDeck;
+	
+	public Deck() {
+		cards = new UnoCard[108];
+	}
+	
+	public void reset() {
+		UnoCard.Color[] colors = UnoCard.Color.values();
+		cardsInDeck = 0;
+		
+		for(int i=0; i<colors.length - 1; i++) {
+			UnoCard.Color color = colors[i];
+			cards[cardsInDeck++] = new UnoCard(color, UnoCard.Value.getValue(0));
+			
+			for(int j=1; j < 10; j++) {
+				cards[cardsInDeck++] = new UnoCard(color, UnoCard.Value.getValue(j));
+				cards[cardsInDeck++] = new UnoCard(color, UnoCard.Value.getValue(j));
+			}
+			
+			UnoCard.Value[] values = new UnoCard.Value[] {UnoCard.Value.DrawTwo, UnoCard.Value.Skip, 
+					UnoCard.Value.Reverse};
+			for(UnoCard.Value value : values) {
+				cards[cardsInDeck++] = new UnoCard(color, value);
+				cards[cardsInDeck++] = new UnoCard(color, value);
+			}
+		}
+		
+		UnoCard.Value[] values = new UnoCard.Value[] {UnoCard.Value.Wild, UnoCard.Value.Wild_Four};
+		for(UnoCard.Value value : values) {
+			for(int i=0; i<4; i++) {
+				cards[cardsInDeck++] = new UnoCard(UnoCard.Color.Wild, value);
+			}
+		}
+	}
+	
+	
+//	public void replaceDeckWith(ArrayList<UnoCard> cards) {
+//		this.cards = cards.toArray(new UnoCard(cards.i));
+//	}
+	
+	public void replaceDeckWith(ArrayList<UnoCard> cards) {
+		this.cards = cards.toArray(new UnoCard[cards.size()]);
+		this.cardsInDeck = this.cards.length;
+	}
+	
+	public boolean isEmpty() {
+		return cardsInDeck == 0;
+	}
+	
+	public void shuffle() {
+		int n = cards.length;
+		Random random = new Random();
+		
+		for(int i=0; i<cards.length; i++) {
+			int randomValue = i + random.nextInt(n-1);
+			UnoCard randomCard = cards[randomValue];
+			cards[i] = randomCard;
+		}
+	}
+	
+	public UnoCard drawCard() throws IllegalArgumentException {
+		if(isEmpty()) {
+			throw new IllegalArgumentException("Cannot draw a card since there is no cards in deck");
+		}
+		
+		return cards[--cardsInDeck];
+	}
+	
+	public ImageIcon drawCardImage() throws IllegalArgumentException {
+		if(isEmpty()) {
+			throw new IllegalArgumentException("Cannot draw a card since there is no cards in deck");
+		}
+		
+		return new ImageIcon(cards[--cardsInDeck].toString() + ".png");
+	}
+	
+	public UnoCard[] drawCard(int n) {
+		if(n < 0) {
+			throw new IllegalArgumentException("Must draw positive cards");
+		}
+		
+		if(n > cardsInDeck) {
+			throw new IllegalArgumentException("Cannot draw cards");
+		}
+		
+		UnoCard[] ret = new UnoCard[n];
+		
+		for(int i=0; i < n; i++) {
+			ret[i] = cards[--cardsInDeck];
+		}
+		
+		return ret;
+	}
 }
